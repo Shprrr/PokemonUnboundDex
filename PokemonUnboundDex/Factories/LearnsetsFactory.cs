@@ -8,14 +8,14 @@ namespace PokemonUnboundDex.Factories
 {
     public class LearnsetsFactory
     {
-        public SpeciesFactory SpeciesFactory { get; set; }
-        public MovesFactory MovesFactory { get; set; }
-
         public LearnsetsFactory(SpeciesFactory speciesFactory, MovesFactory movesFactory)
         {
             SpeciesFactory = speciesFactory;
             MovesFactory = movesFactory;
         }
+
+        public SpeciesFactory SpeciesFactory { get; private set; }
+        public MovesFactory MovesFactory { get; private set; }
 
         public Learnset[] GetLearnsets()
         {

@@ -32,7 +32,7 @@ namespace PokemonUnboundDex.Factories
             Regex speciesRegex = new(@"#define (?<species>SPECIES_\w+) 0x(?<id>\w+)");
             for (int i = 0; i < speciesPerLine.Count; i++)
             {
-                Match speciesMatch = speciesRegex.Match(speciesPerLine[i].Trim());
+                var speciesMatch = speciesRegex.Match(speciesPerLine[i].Trim());
                 if (!speciesMatch.Success) continue;
                 speciesByName.Add(speciesMatch.Groups["species"].Value, int.Parse(speciesMatch.Groups["id"].Value, NumberStyles.HexNumber));
             }

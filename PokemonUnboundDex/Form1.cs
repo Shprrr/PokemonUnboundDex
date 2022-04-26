@@ -9,6 +9,7 @@ namespace PokemonUnboundDex
 {
     public partial class Form1 : Form
     {
+        private readonly Dictionary<int, Pokemon> pokemons;
         private readonly Dictionary<int, Learnset[]> learnsets;
 
         public SpeciesFactory SpeciesFactory { get; } = new SpeciesFactory();
@@ -17,6 +18,7 @@ namespace PokemonUnboundDex
         public Form1()
         {
             InitializeComponent();
+            pokemons = new PokemonsFactory(SpeciesFactory).GetPokemons().ToDictionary(l => l.PokemonId, l => l);
             learnsets = new LearnsetsFactory(SpeciesFactory, MovesFactory).GetLearnsets().GroupBy(l => l.PokemonId).ToDictionary(l => l.Key, l => l.ToArray());
         }
 
@@ -36,23 +38,15 @@ namespace PokemonUnboundDex
         private void cboSearch_SelectedIndexChanged(object sender, EventArgs e)
         {
             panSearch.Controls.Clear();
-            ListView listView = new();
-            listView.Dock = DockStyle.Fill;
-            listView.Columns.Add("Level", 40, HorizontalAlignment.Right);
-            listView.Columns.Add("Move", 200);
-            listView.View = View.Details;
 
             var pokemonId = SpeciesFactory.GetPokemonIdByConstantName((string)cboSearch.SelectedItem);
-            if (learnsets.TryGetValue(pokemonId, out var dataSource))
-                listView.Items.AddRange(dataSource.Select(ToListViewItem).ToArray());
-            panSearch.Controls.Add(listView);
-        }
+            if (!pokemons.ContainsKey(pokemonId)) return;
 
-        private ListViewItem ToListViewItem(Learnset learnset)
-        {
-            ListViewItem listViewItem = new(new[] { learnset.Level.ToString(), MovesFactory.GetMoveById(learnset.MoveId).MoveName });
-
-            return listViewItem;
+            var control = new PokemonSummary(this, pokemons[pokemonId], learnsets[pokemonId])
+            {
+                Dock = DockStyle.Fill
+            };
+            panSearch.Controls.Add(control);
         }
     }
 }
