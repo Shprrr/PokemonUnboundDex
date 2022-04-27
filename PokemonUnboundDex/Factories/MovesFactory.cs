@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using PokemonUnboundDex.Models;
+using PokemonUnboundDex.Resources;
 
 namespace PokemonUnboundDex.Factories
 {
@@ -21,18 +20,10 @@ namespace PokemonUnboundDex.Factories
         private static void LoadDefineMoves()
         {
             movesByName.Clear();
-            using var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PokemonUnboundDex.Resources.moves.h");
-            using StreamReader movesStream = new(resourceStream);
-
-            List<string> movesPerLine = new();
-
-            while (!movesStream.EndOfStream)
-            {
-                movesPerLine.Add(movesStream.ReadLine());
-            }
+            var movesPerLine = ResourceReader.ReadResourcePerLine("PokemonUnboundDex.Resources.moves.h");
 
             Regex moveRegex = new(@"#define (?<move>MOVE_\w+) 0x(?<id>\w+)");
-            for (int i = 0; i < movesPerLine.Count; i++)
+            for (int i = 0; i < movesPerLine.Length; i++)
             {
                 Match moveMatch = moveRegex.Match(movesPerLine[i].Trim());
                 if (!moveMatch.Success) continue;
@@ -43,18 +34,10 @@ namespace PokemonUnboundDex.Factories
         private static void LoadMoves()
         {
             moves.Clear();
-            using var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PokemonUnboundDex.Resources.attack_name_table.string");
-            using StreamReader movesStream = new(resourceStream);
-
-            List<string> movesPerLine = new();
-
-            while (!movesStream.EndOfStream)
-            {
-                movesPerLine.Add(movesStream.ReadLine());
-            }
+            var movesPerLine = ResourceReader.ReadResourcePerLine("PokemonUnboundDex.Resources.attack_name_table.string");
 
             Regex moveRegex = new(@"#org @NAME_\w+");
-            for (int i = 0; i < movesPerLine.Count; i++)
+            for (int i = 0; i < movesPerLine.Length; i++)
             {
                 Match moveMatch = moveRegex.Match(movesPerLine[i].Trim());
                 if (!moveMatch.Success) continue;

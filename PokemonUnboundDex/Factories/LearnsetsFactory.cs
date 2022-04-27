@@ -1,8 +1,8 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
+﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using PokemonUnboundDex.Models;
+using PokemonUnboundDex.Resources;
 
 namespace PokemonUnboundDex.Factories
 {
@@ -19,21 +19,13 @@ namespace PokemonUnboundDex.Factories
 
         public Learnset[] GetLearnsets()
         {
-            using var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PokemonUnboundDex.Resources.Learnsets.c");
-            using StreamReader learnsetsStream = new(resourceStream);
-
-            List<string> learnsetsPerLine = new();
-
-            while (!learnsetsStream.EndOfStream)
-            {
-                learnsetsPerLine.Add(learnsetsStream.ReadLine());
-            }
+            var learnsetsPerLine = ResourceReader.ReadResourcePerLine("PokemonUnboundDex.Resources.Learnsets.c");
 
             List<Learnset> learnsets = new();
-            var indexStartLevelUpLearnsets = learnsetsPerLine.IndexOf("const struct LevelUpMove* const gLevelUpLearnsets[NUM_SPECIES] =");
+            var indexStartLevelUpLearnsets = Array.IndexOf(learnsetsPerLine, "const struct LevelUpMove* const gLevelUpLearnsets[NUM_SPECIES] =");
             Regex learnsetRegex = new(@"\[(?<species>\w+)\] = (?<learnset>\w+)");
             Regex speciesLearnsetRegex = new(@"LEVEL_UP_MOVE\(\s*(?<level>\d+), (?<move>\w+)\)");
-            for (int i = indexStartLevelUpLearnsets + 2; i < learnsetsPerLine.Count && learnsetsPerLine[i].Trim() != "};"; i++)
+            for (int i = indexStartLevelUpLearnsets + 2; i < learnsetsPerLine.Length && learnsetsPerLine[i].Trim() != "};"; i++)
             {
                 var learnsetGroups = learnsetRegex.Match(learnsetsPerLine[i].Trim()).Groups;
                 var speciesConstant = learnsetGroups["species"];
@@ -41,7 +33,7 @@ namespace PokemonUnboundDex.Factories
                 if (!SpeciesFactory.IsSpecies(speciesConstant.Value)) continue;
 
                 var pokemonId = SpeciesFactory.GetPokemonIdByConstantName(speciesConstant.Value);
-                var indexLearnset = learnsetsPerLine.IndexOf($"static const struct LevelUpMove {learnsetConstant.Value}[] = {{");
+                var indexLearnset = Array.IndexOf(learnsetsPerLine, $"static const struct LevelUpMove {learnsetConstant.Value}[] = {{");
 
                 for (int j = indexLearnset + 1; j < indexStartLevelUpLearnsets && learnsetsPerLine[j].Trim() != "};"; j++)
                 {

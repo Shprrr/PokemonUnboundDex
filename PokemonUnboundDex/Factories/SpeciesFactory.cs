@@ -1,9 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text.RegularExpressions;
+using PokemonUnboundDex.Resources;
 
 namespace PokemonUnboundDex.Factories
 {
@@ -19,18 +18,10 @@ namespace PokemonUnboundDex.Factories
         private static void LoadSpecies()
         {
             speciesByName.Clear();
-            using var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PokemonUnboundDex.Resources.species.h");
-            using StreamReader speciesStream = new(resourceStream);
-
-            List<string> speciesPerLine = new();
-
-            while (!speciesStream.EndOfStream)
-            {
-                speciesPerLine.Add(speciesStream.ReadLine());
-            }
+            var speciesPerLine = ResourceReader.ReadResourcePerLine("PokemonUnboundDex.Resources.species.h");
 
             Regex speciesRegex = new(@"#define (?<species>SPECIES_\w+) 0x(?<id>\w+)");
-            for (int i = 0; i < speciesPerLine.Count; i++)
+            for (int i = 0; i < speciesPerLine.Length; i++)
             {
                 var speciesMatch = speciesRegex.Match(speciesPerLine[i].Trim());
                 if (!speciesMatch.Success) continue;

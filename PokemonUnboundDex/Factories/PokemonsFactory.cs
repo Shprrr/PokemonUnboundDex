@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using System.IO;
-using System.Reflection;
 using System.Text.RegularExpressions;
 using PokemonUnboundDex.Models;
+using PokemonUnboundDex.Resources;
 
 namespace PokemonUnboundDex.Factories
 {
@@ -17,21 +16,13 @@ namespace PokemonUnboundDex.Factories
 
         public Pokemon[] GetPokemons()
         {
-            using var resourceStream = Assembly.GetExecutingAssembly().GetManifestResourceStream("PokemonUnboundDex.Resources.Base_Stats.c");
-            using StreamReader baseStatsStream = new(resourceStream);
-
-            List<string> baseStatsPerLine = new();
-
-            while (!baseStatsStream.EndOfStream)
-            {
-                baseStatsPerLine.Add(baseStatsStream.ReadLine());
-            }
+            var baseStatsPerLine = ResourceReader.ReadResourcePerLine("PokemonUnboundDex.Resources.Base_Stats.c");
 
             List<Pokemon> pokemons = new();
             Regex speciesRegex = new(@"\[(?<species>\w+)\] =$");
             Regex abilityRegex = new(@"\.(?<abilityNumber>ability[12]|hiddenAbility) = (?<abilityConstant>\w+),");
             Pokemon readingPokemon = null;
-            for (int i = 0; i < baseStatsPerLine.Count; i++)
+            for (int i = 0; i < baseStatsPerLine.Length; i++)
             {
                 var speciesMatch = speciesRegex.Match(baseStatsPerLine[i].Trim());
                 if ((!speciesMatch.Success || !SpeciesFactory.IsSpecies(speciesMatch.Groups["species"].Value)) && readingPokemon == null) continue;
