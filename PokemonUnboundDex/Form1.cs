@@ -31,7 +31,10 @@ namespace PokemonUnboundDex
         {
             if (rbSearchPokemon.Checked)
             {
-                cboSearch.DataSource = SpeciesFactory.GetAllSpecies();
+                cboSearch.DisplayMember = "Display";
+                cboSearch.ValueMember = "Value";
+                cboSearch.DataSource = SpeciesFactory.GetAllSpecies()
+                    .Join(pokemons, s => SpeciesFactory.GetPokemonIdByConstantName(s), p => p.Key, (s, p) => new { Display = p.Value.Name, Value = p.Key }).ToList();
             }
         }
 
@@ -39,10 +42,11 @@ namespace PokemonUnboundDex
         {
             panSearch.Controls.Clear();
 
-            var pokemonId = SpeciesFactory.GetPokemonIdByConstantName((string)cboSearch.SelectedItem);
-            if (!pokemons.ContainsKey(pokemonId)) return;
+            var pokemonId = (int)cboSearch.SelectedValue;
+            pokemons.TryGetValue(pokemonId, out var pokemon);
+            learnsets.TryGetValue(pokemonId, out var learnset);
 
-            var control = new PokemonSummary(this, pokemons[pokemonId], learnsets[pokemonId])
+            var control = new PokemonSummary(this, pokemon, learnset)
             {
                 Dock = DockStyle.Fill
             };

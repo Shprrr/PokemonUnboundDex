@@ -17,6 +17,26 @@ namespace PokemonUnboundDex.Factories
         public Pokemon[] GetPokemons()
         {
             var baseStatsPerLine = ResourceReader.ReadResourcePerLine("PokemonUnboundDex.Resources.Base_Stats.c");
+            var namesPerLine = ResourceReader.ReadResourcePerLine("PokemonUnboundDex.Resources.Pokemon_Name_Table.string");
+
+            List<string> names = new();
+            Regex nameRegex = new(@"#org @\w+");
+            bool first = true, isName = false;
+            foreach (var line in namesPerLine)
+            {
+                if (nameRegex.IsMatch(line.Trim()))
+                {
+                    if (first)
+                        first = false;
+                    else
+                        isName = true;
+                }
+                else if (isName)
+                {
+                    names.Add(line.Trim());
+                    isName = false;
+                }
+            }
 
             List<Pokemon> pokemons = new();
             Regex speciesRegex = new(@"\[(?<species>\w+)\] =$");
@@ -31,6 +51,7 @@ namespace PokemonUnboundDex.Factories
                 {
                     readingPokemon = new();
                     readingPokemon.PokemonId = SpeciesFactory.GetPokemonIdByConstantName(speciesMatch.Groups["species"].Value);
+                    readingPokemon.Name = names[readingPokemon.PokemonId];
                 }
                 else if (baseStatsPerLine[i].Trim() == "},")
                 {

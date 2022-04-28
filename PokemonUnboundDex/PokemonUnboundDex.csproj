@@ -16,6 +16,7 @@
     <None Remove="Resources\attack_name_table.string" />
     <None Remove="Resources\Base_Stats.c" />
     <None Remove="Resources\moves.h" />
+    <None Remove="Resources\Pokemon_Name_Table.string" />
     <None Remove="species.h" />
   </ItemGroup>
 
@@ -24,6 +25,7 @@
     <EmbeddedResource Include="Resources\Base_Stats.c" />
     <EmbeddedResource Include="Resources\Learnsets.c" />
     <EmbeddedResource Include="Resources\moves.h" />
+    <EmbeddedResource Include="Resources\Pokemon_Name_Table.string" />
     <EmbeddedResource Include="Resources\species.h" />
   </ItemGroup>
 
