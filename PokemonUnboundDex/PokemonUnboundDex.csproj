@@ -13,6 +13,8 @@
 
   <ItemGroup>
     <None Remove="Learnsets.c" />
+    <None Remove="Resources\abilities.h" />
+    <None Remove="Resources\ability_name_table.string" />
     <None Remove="Resources\attack_name_table.string" />
     <None Remove="Resources\Base_Stats.c" />
     <None Remove="Resources\moves.h" />
@@ -21,6 +23,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <EmbeddedResource Include="Resources\abilities.h" />
+    <EmbeddedResource Include="Resources\ability_name_table.string" />
     <EmbeddedResource Include="Resources\attack_name_table.string" />
     <EmbeddedResource Include="Resources\Base_Stats.c" />
     <EmbeddedResource Include="Resources\Learnsets.c" />

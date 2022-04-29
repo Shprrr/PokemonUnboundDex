@@ -31,7 +31,7 @@ namespace PokemonUnboundDex.Factories
 
         public string[] GetAllSpecies() => speciesByName.Keys.ToArray();
 
-        public bool IsSpecies(string name) => speciesByName.ContainsKey(name);
+        public bool IsSpecies(string name) => !string.IsNullOrEmpty(name) && speciesByName.ContainsKey(name);
 
         public int GetPokemonIdByConstantName(string name) => speciesByName[name];
     }

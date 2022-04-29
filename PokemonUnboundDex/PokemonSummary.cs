@@ -16,9 +16,9 @@ namespace PokemonUnboundDex
             Learnsets = learnsets ?? Array.Empty<Learnset>();
             MovesFactory = parent.MovesFactory;
 
-            lblAbility1.Text = Pokemon.Ability1;
-            lblAbility2.Text = Pokemon.Ability2;
-            lblHiddenAbility.Text = Pokemon.HiddenAbility;
+            lblAbility1.Text = ShowAbility(Pokemon.Ability1);
+            lblAbility2.Text = ShowAbility(Pokemon.Ability2);
+            lblHiddenAbility.Text = ShowAbility(Pokemon.HiddenAbility);
             listView.Items.AddRange(Learnsets.Select(ToListViewItem).ToArray());
             if (pokemon == null) Pokemon = null;
         }
@@ -26,6 +26,15 @@ namespace PokemonUnboundDex
         public Pokemon Pokemon { get; }
         public Learnset[] Learnsets { get; }
         public MovesFactory MovesFactory { get; }
+        public AbilitiesFactory AbilitiesFactory { get; } = new();
+
+        private string ShowAbility(string abilityConstantName) => abilityConstantName switch
+        {
+            "ABILITY_NONE" => "",
+            _ => AbilitiesFactory.IsAbility(abilityConstantName)
+                ? AbilitiesFactory.GetAbilityById(AbilitiesFactory.GetAbilityIdByConstantName(abilityConstantName)).AbilityName
+                : abilityConstantName
+        };
 
         private ListViewItem ToListViewItem(Learnset learnset)
         {
